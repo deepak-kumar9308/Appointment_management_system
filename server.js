@@ -42,17 +42,29 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
+// Connect to MongoDB (cached for serverless warm starts)
+let isConnected = false;
 const connectDB = async () => {
+  if (isConnected) return;
   try {
     mongoose.set('strictQuery', false);
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/appointments_db');
+    isConnected = true;
     console.log('Connected to MongoDB successfully');
-    // Start server ONLY if Database is active
-    app.listen(PORT, '127.0.0.1', () => console.log(`Server running strictly on IPv4 port ${PORT}`));
   } catch (error) {
-    console.error('FATAL ERROR: MongoDB connection failed. Please ensure your Database is running locally or check your MONGO_URI string!', error.message);
+    console.error('FATAL ERROR: MongoDB connection failed:', error.message);
     process.exit(1);
   }
 };
-connectDB();
+
+// Start server only in non-serverless (local) environments
+if (process.env.NODE_ENV !== 'production') {
+  connectDB().then(() => {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  });
+} else {
+  // For Vercel: connect on first request (handled by exported handler)
+  connectDB();
+}
+
+module.exports = app;
