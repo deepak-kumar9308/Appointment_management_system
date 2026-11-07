@@ -4,7 +4,6 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Pages
 import DiscoveryDashboard from './components/DiscoveryDashboard';
 import Registration from './components/Registration';
 import AdminLayout from './components/AdminLayout';

@@ -123,6 +123,6 @@ dist
 # Ignore generated Vite project output inside frontend
 frontend/dist/
 frontend/node_modules/
-
+backend/.env
 # Antigravity/Gemini artifacts
 .gemini/
